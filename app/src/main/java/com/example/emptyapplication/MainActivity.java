@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import android.content.Intent;
-import com.google.firebase.Firebase;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startActivityPlayground(String username) {
-        Intent intent = new Intent(MainActivity.this, ActivityPlayground.class);
+        Intent intent = new Intent(MainActivity.this, PlaygroundActivity.class);
         intent.putExtra("username", username);
         startActivity(intent);
         finish();

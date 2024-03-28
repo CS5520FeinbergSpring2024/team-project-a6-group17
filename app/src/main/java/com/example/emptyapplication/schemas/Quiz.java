@@ -10,9 +10,9 @@ public class Quiz {
     private ArrayList<Question> questions;
     private String createdBy;
     private int numQuestions;
+    private boolean isCompleted;
 
     public Quiz() {
-
     }
 
     public Quiz(String quiz_id, String name, String createdBy, int numQuestions) {
@@ -21,6 +21,7 @@ public class Quiz {
         this.questions = new ArrayList<>();
         this.createdBy = createdBy;
         this.numQuestions = numQuestions;
+        this.isCompleted = false;
 
         for (int i = 0; i < numQuestions; i++) {
             this.questions.add(new Question());
@@ -61,5 +62,13 @@ public class Quiz {
 
     public void setNumQuestions(int numQuestions) {
         this.numQuestions = numQuestions;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
+    public void setCompleted(boolean isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

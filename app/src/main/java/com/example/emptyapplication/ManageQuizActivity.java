@@ -7,14 +7,19 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.emptyapplication.schemas.Quiz;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class ManageQuizActivity extends AppCompatActivity {
 
@@ -36,6 +41,7 @@ public class ManageQuizActivity extends AppCompatActivity {
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         quizRef = database.getReference("Quiz");
+        removeIncompleteQuiz();
 
         Button buttonManageQuizAdd = findViewById(R.id.buttonManageQuizAdd);
         buttonManageQuizAdd.setOnClickListener(new View.OnClickListener() {
@@ -52,9 +58,33 @@ public class ManageQuizActivity extends AppCompatActivity {
                             intent.putExtra("newQuizId", newQuiz.getQuiz_id());
                             startActivity(intent);
                         })
-                        .addOnFailureListener(e -> {
+                        .addOnFailureListener(e -> {});
+            }
+        });
+    }
 
-                        });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        removeIncompleteQuiz();
+    }
+
+    private void removeIncompleteQuiz() {
+        Query query = quizRef.orderByChild("completed").equalTo(false);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        // Remove the entry
+                        snapshot.getRef().removeValue()
+                                .addOnSuccessListener(aVoid -> {})
+                                .addOnFailureListener(e -> {});
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

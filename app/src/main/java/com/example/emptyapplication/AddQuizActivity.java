@@ -254,6 +254,10 @@ public class AddQuizActivity extends AppCompatActivity {
             }
         }
 
+        if (currQuestionNo == numQuestions) {
+            newQuiz.setCompleted(true);
+        }
+
         newQuizRef.setValue(newQuiz)
                 .addOnSuccessListener(aVoid -> {
                     Intent intent;

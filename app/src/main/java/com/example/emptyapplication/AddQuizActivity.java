@@ -10,6 +10,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -84,9 +86,11 @@ public class AddQuizActivity extends AppCompatActivity {
         TextView progressText = findViewById(R.id.progressText);
         ProgressBar progressBarAddQuiz = findViewById(R.id.progressBarAddQuiz);
         Spinner spinnerAddQuizType = findViewById(R.id.spinnerAddQuizType);
+        Button buttonAddQuizPrev = findViewById(R.id.buttonAddQuizPrev);
         Button buttonAddQuizNext = findViewById(R.id.buttonAddQuizNext);
 
         // set up UI
+        buttonAddQuizPrev.setVisibility(View.GONE);
         if (currQuestionNo == numQuestions) {
             buttonAddQuizNext.setText("Submit");
         }
@@ -151,6 +155,19 @@ public class AddQuizActivity extends AppCompatActivity {
                 // Add the answer layout to the section
                 answerSection.addView(answerContainer);
             }
+        } else if ("True/False".equals(quizType)) {
+            RadioGroup radioGroup = new RadioGroup(this);
+            radioGroup.setOrientation(LinearLayout.VERTICAL);
+
+            RadioButton trueOption = new RadioButton(this);
+            trueOption.setText("True");
+            radioGroup.addView(trueOption);
+
+            RadioButton falseOption = new RadioButton(this);
+            falseOption.setText("False");
+            radioGroup.addView(falseOption);
+
+            answerSection.addView(radioGroup);
         }
     }
 
@@ -211,14 +228,43 @@ public class AddQuizActivity extends AppCompatActivity {
             }
             question.setOptions(options);
             question.setCorrectOptions(correctOptions);
+        } else if ("True/False".equals(selectedQuizType)) {
+            question.setType(QuestionType.TRUE_FALSE);
+
+            RadioGroup radioGroup = null;
+            for (int i = 0; i < answerSection.getChildCount(); i++) {
+                View child = answerSection.getChildAt(i);
+                if (child instanceof RadioGroup) {
+                    radioGroup = (RadioGroup) child;
+                    break;
+                }
+            }
+
+            if (radioGroup != null) {
+                int selectedId = radioGroup.getCheckedRadioButtonId();
+                // Handle the case where no option is selected
+                if (selectedId == -1) {
+                    Toast.makeText(getApplicationContext(), "Missing selection", Toast.LENGTH_SHORT).show();
+                    return;
+                } else {
+                    RadioButton selectedRadioButton = radioGroup.findViewById(selectedId);
+                    String answerText = selectedRadioButton.getText().toString();
+                    question.setCorrectTFAnswer("True".equals(answerText));
+                }
+            }
         }
 
         newQuizRef.setValue(newQuiz)
                 .addOnSuccessListener(aVoid -> {
-                    Intent intent = new Intent(AddQuizActivity.this, AddQuizActivity.class);
-                    intent.putExtra("currQuestionNo", currQuestionNo + 1);
-                    intent.putExtra("numQuestions", numQuestions);
-                    intent.putExtra("newQuizId", newQuizId);
+                    Intent intent;
+                    if (currQuestionNo < numQuestions) {
+                        intent = new Intent(AddQuizActivity.this, AddQuizActivity.class);
+                        intent.putExtra("currQuestionNo", currQuestionNo + 1);
+                        intent.putExtra("numQuestions", numQuestions);
+                        intent.putExtra("newQuizId", newQuizId);
+                    } else {
+                        intent = new Intent(AddQuizActivity.this, ManageQuizActivity.class);
+                    }
                     startActivity(intent);
                 })
                 .addOnFailureListener(e -> {

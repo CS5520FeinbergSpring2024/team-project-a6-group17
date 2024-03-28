@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.emptyapplication.schemas.Quiz;
 import com.google.firebase.database.DataSnapshot;
@@ -21,9 +23,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ManageQuizActivity extends AppCompatActivity {
 
     private DatabaseReference quizRef;
+    RecyclerView recyclerViewQuizList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +49,32 @@ public class ManageQuizActivity extends AppCompatActivity {
         quizRef = database.getReference("Quiz");
         removeIncompleteQuiz();
 
+//        show quiz list
+        List<Quiz> quizzes = new ArrayList<>();
+        recyclerViewQuizList = findViewById(R.id.recyclerViewManageQuiz);
+        ManageQuizAdapter adapter = new ManageQuizAdapter(quizzes);
+        recyclerViewQuizList.setAdapter(adapter);
+        recyclerViewQuizList.setLayoutManager(new LinearLayoutManager(this));
+
+        quizRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Quiz quiz = snapshot.getValue(Quiz.class);
+                    if (quiz.getCreatedBy().equals(username)) {
+                        quizzes.add(quiz);
+                    }
+                }
+                adapter.notifyDataSetChanged(); // Refresh the list
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors
+            }
+        });
+
         Button buttonManageQuizAdd = findViewById(R.id.buttonManageQuizAdd);
         buttonManageQuizAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +93,8 @@ public class ManageQuizActivity extends AppCompatActivity {
                         .addOnFailureListener(e -> {});
             }
         });
+
+
     }
 
     @Override

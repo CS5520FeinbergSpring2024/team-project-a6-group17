@@ -3,6 +3,7 @@ package com.example.emptyapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,15 +11,12 @@ import android.widget.Toast;
 
 import android.content.Intent;
 
+import com.example.emptyapplication.schemas.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
     private EditText txtUsername;
@@ -33,9 +31,9 @@ public class MainActivity extends AppCompatActivity {
         txtUsername = findViewById(R.id.txtUsername);
         btnLogin = findViewById(R.id.btnLogin);
 
-        usersRef = FirebaseDatabase.getInstance().getReference("Users");
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        usersRef = database.getReference("Users");
         btnLogin.setOnClickListener(view -> loginUser());
-
 
     }
 
@@ -70,11 +68,9 @@ public class MainActivity extends AppCompatActivity {
     private void createUser(String username) {
         DatabaseReference userRef = usersRef.child(username);
 
-        Map<String, Object> userValues = new HashMap<>();
-        userValues.put("username", username);
-        userValues.put("quizCreated", new ArrayList<String>());
+        User user = new User(username);
 
-        userRef.setValue(userValues)
+        userRef.setValue(user)
                 .addOnSuccessListener(aVoid -> {
                     // User creation successful
                     Toast.makeText(getApplicationContext(), "New user created: " + username, Toast.LENGTH_SHORT).show();
@@ -89,9 +85,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void startActivityPlayground(String username) {
         Intent intent = new Intent(MainActivity.this, PlaygroundActivity.class);
-        intent.putExtra("username", username);
+        saveUsernameToPreferences(username);
         startActivity(intent);
         finish();
     }
 
+    private void saveUsernameToPreferences(String username) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username", username);
+        editor.apply();
+    }
 }

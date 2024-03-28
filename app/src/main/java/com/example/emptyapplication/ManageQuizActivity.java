@@ -50,7 +50,7 @@ public class ManageQuizActivity extends AppCompatActivity {
                 Intent intent = new Intent(ManageQuizActivity.this, AddQuizActivity.class);
 
                 DatabaseReference newQuizRef = quizRef.push();
-                Quiz newQuiz = new Quiz(newQuizRef.getKey(), "new quiz", username, 3);
+                Quiz newQuiz = new Quiz(newQuizRef.getKey(), "new quiz", username, System.currentTimeMillis(), 3);
                 newQuizRef.setValue(newQuiz)
                         .addOnSuccessListener(aVoid -> {
                             intent.putExtra("currQuestionNo", 1);

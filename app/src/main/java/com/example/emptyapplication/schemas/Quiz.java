@@ -9,17 +9,19 @@ public class Quiz {
     private String name;
     private ArrayList<Question> questions;
     private String createdBy;
+    private long createdAt;
     private int numQuestions;
     private boolean isCompleted;
 
     public Quiz() {
     }
 
-    public Quiz(String quiz_id, String name, String createdBy, int numQuestions) {
+    public Quiz(String quiz_id, String name, String createdBy, long createdAt, int numQuestions) {
         this.quiz_id = quiz_id;
         this.name = name;
         this.questions = new ArrayList<>();
         this.createdBy = createdBy;
+        this.createdAt = createdAt;
         this.numQuestions = numQuestions;
         this.isCompleted = false;
 
@@ -54,6 +56,14 @@ public class Quiz {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getNumQuestions() {

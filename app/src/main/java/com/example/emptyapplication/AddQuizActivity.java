@@ -6,7 +6,9 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +17,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class AddQuizActivity extends AppCompatActivity {
+
+    private int currQuestionNo;
+    private int numQuestions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +32,19 @@ public class AddQuizActivity extends AppCompatActivity {
             return insets;
         });
 
-        // set up dynamic section based on quiz type
+        currQuestionNo = getIntent().getIntExtra("currQuestionNo", 0);
+        numQuestions = getIntent().getIntExtra("numQuestions", 0);
+
+        TextView progressText = findViewById(R.id.progressText);
+        ProgressBar progressBarAddQuiz = findViewById(R.id.progressBarAddQuiz);
         Spinner spinnerAddQuizType = findViewById(R.id.spinnerAddQuizType);
 
+
+        progressText.setText(String.format("Question %d / %d", currQuestionNo, numQuestions));
+        progressBarAddQuiz.setProgress(currQuestionNo);
+        progressBarAddQuiz.setMax(numQuestions);
+
+        // set up dynamic section based on quiz type
         spinnerAddQuizType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {

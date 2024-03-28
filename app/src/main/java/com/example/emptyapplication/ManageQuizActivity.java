@@ -28,7 +28,10 @@ public class ManageQuizActivity extends AppCompatActivity {
         buttonManageQuizAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ManageQuizActivity.this, AddQuizActivity.class));
+                Intent intent = new Intent(ManageQuizActivity.this, AddQuizActivity.class);
+                intent.putExtra("currQuestionNo", 1);
+                intent.putExtra("numQuestions", 3);
+                startActivity(intent);
             }
         });
     }

@@ -62,7 +62,7 @@ public class AddQuizActivity extends AppCompatActivity {
 
         currQuestionNo = getIntent().getIntExtra("currQuestionNo", 0);
         numQuestions = getIntent().getIntExtra("numQuestions", 0);
-        newQuizId = getIntent().getStringExtra("newQuizId");
+        newQuizId = getIntent().getStringExtra("quiz_id");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         newQuizRef = database.getReference("Quiz").child(newQuizId);
@@ -265,7 +265,7 @@ public class AddQuizActivity extends AppCompatActivity {
                         intent = new Intent(AddQuizActivity.this, AddQuizActivity.class);
                         intent.putExtra("currQuestionNo", currQuestionNo + 1);
                         intent.putExtra("numQuestions", numQuestions);
-                        intent.putExtra("newQuizId", newQuizId);
+                        intent.putExtra("quiz_id", newQuizId);
                     } else {
                         intent = new Intent(AddQuizActivity.this, ManageQuizActivity.class);
                     }

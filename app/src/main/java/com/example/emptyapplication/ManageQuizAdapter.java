@@ -3,6 +3,7 @@ package com.example.emptyapplication;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,8 +18,17 @@ import java.util.List;
 
 public class ManageQuizAdapter extends RecyclerView.Adapter<ManageQuizAdapter.QuizViewHolder> {
     private List<Quiz> quizList;
+    public interface OnQuizListener {
+        void onQuizClick(Quiz quiz);
+    }
+    private OnQuizListener onQuizListener;
 
-    public static class QuizViewHolder extends RecyclerView.ViewHolder {
+    public ManageQuizAdapter(List<Quiz> quizList, OnQuizListener onQuizListener) {
+        this.onQuizListener = onQuizListener;
+        this.quizList = quizList;
+    }
+
+    public class QuizViewHolder extends RecyclerView.ViewHolder {
         public TextView quizNameTextView;
         public TextView numberOfQuestionsTextView;
         public TextView timeCreatedTextView;
@@ -28,12 +38,16 @@ public class ManageQuizAdapter extends RecyclerView.Adapter<ManageQuizAdapter.Qu
             quizNameTextView = v.findViewById(R.id.txtQuizTittle);
             numberOfQuestionsTextView = v.findViewById(R.id.txtNumQuestion);
             timeCreatedTextView = v.findViewById(R.id.txtCreatedAt);
+            v.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onQuizListener.onQuizClick(quizList.get(getAdapterPosition()));
+                }
+            });
         }
     }
 
-    public ManageQuizAdapter(List<Quiz> quizList) {
-        this.quizList = quizList;
-    }
+
 
     @NonNull
     @Override
@@ -59,4 +73,7 @@ public class ManageQuizAdapter extends RecyclerView.Adapter<ManageQuizAdapter.Qu
     public int getItemCount() {
         return quizList.size();
     }
+
+
+
 }

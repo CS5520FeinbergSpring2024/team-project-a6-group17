@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-
 public class PlaygroundActivity extends AppCompatActivity {
 
     @Override
@@ -19,6 +18,9 @@ public class PlaygroundActivity extends AppCompatActivity {
 
         TextView textViewPlayground = findViewById(R.id.textViewPlayground);
         Button buttonMakeQuiz = findViewById(R.id.buttonMakeQuiz);
+
+        Button buttonTakeQuiz = findViewById(R.id.buttonTakeQuiz);
+
 
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "to Quizzzzz");
@@ -30,6 +32,13 @@ public class PlaygroundActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(PlaygroundActivity.this, ManageQuizActivity.class));
+            }
+        });
+
+        buttonTakeQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PlaygroundActivity.this, TakeQuizActivity.class));
             }
         });
     }

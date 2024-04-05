@@ -1,4 +1,7 @@
 package com.example.emptyapplication;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -14,15 +17,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class TakeQuizActivity extends AppCompatActivity {
-    private RecyclerView recyclerView;
     private List<Quiz> quizList;
     private TakeQuizAdapter adapter;
     private DatabaseReference quizzesRef;
@@ -32,7 +30,7 @@ public class TakeQuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_quiz);
 
-        recyclerView = findViewById(R.id.recyclerViewTakeQuiz);
+        RecyclerView recyclerView = findViewById(R.id.recyclerViewTakeQuiz);
         quizzesRef = FirebaseDatabase.getInstance().getReference("Quiz");
         quizList = new ArrayList<>();
         adapter = new TakeQuizAdapter(quizList);
@@ -43,10 +41,21 @@ public class TakeQuizActivity extends AppCompatActivity {
 
         // Load quizzes from Firebase
         loadQuizzes();
+
+        // Set click listener for item clicks
+        adapter.setOnItemClickListener(position -> {
+            Quiz selectedQuiz = quizList.get(position);
+            String quizId = selectedQuiz.getQuiz_id();
+
+            Intent intent = new Intent(TakeQuizActivity.this, TakeQuizQuestionsActivity.class);
+            intent.putExtra("quiz_id", quizId);
+            startActivity(intent);
+        });
     }
 
     private void loadQuizzes() {
         quizzesRef.addValueEventListener(new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 quizList.clear();

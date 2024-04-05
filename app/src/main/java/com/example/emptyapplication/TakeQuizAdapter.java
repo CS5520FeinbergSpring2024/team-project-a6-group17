@@ -17,6 +17,15 @@ import java.util.Date;
 
 public class TakeQuizAdapter extends RecyclerView.Adapter<TakeQuizAdapter.ViewHolder> {
     private List<Quiz> quizList;
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public TakeQuizAdapter(List<Quiz> quizList) {
         this.quizList = quizList;
@@ -46,7 +55,7 @@ public class TakeQuizAdapter extends RecyclerView.Adapter<TakeQuizAdapter.ViewHo
         return quizList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView txtQuizTittle;
         private TextView txtNumQuestion;
         private TextView txtCreatedAt;
@@ -56,6 +65,19 @@ public class TakeQuizAdapter extends RecyclerView.Adapter<TakeQuizAdapter.ViewHo
             txtQuizTittle = itemView.findViewById(R.id.txtQuizTittle);
             txtNumQuestion = itemView.findViewById(R.id.txtNumQuestion);
             txtCreatedAt = itemView.findViewById(R.id.txtCreatedAt);
+
+            // Set click listener
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
         }
 
         public void bind(Quiz quiz) {

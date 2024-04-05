@@ -4,4 +4,11 @@
         <item>Multiple Choice</item>
         <item>True/False</item>
     </string-array>
+    <string name="button_true_text">True</string>
+    <string name="button_false_text">False</string>
+    <string name="button_next_text">Next</string>
+    <string name="button_finish_text">Finish</string>
+    <string name="quiz_info">%1$s (Question %2$d/%3$d)</string>
+    <string name="quiz_info_placeholder">Quiz Info</string>
+    <string name="question_placeholder">Question</string>
 </resources>

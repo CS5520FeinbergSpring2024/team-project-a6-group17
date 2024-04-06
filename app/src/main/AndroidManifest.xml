@@ -37,6 +37,9 @@
         <activity
             android:name=".TakeQuizQuestionsActivity"
             android:exported="false" />
+
+        <activity android:name=".QuizResultActivity" />
+
     </application>
 
 </manifest>

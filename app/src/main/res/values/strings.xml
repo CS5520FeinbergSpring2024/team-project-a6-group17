@@ -11,4 +11,6 @@
     <string name="quiz_info">%1$s (Question %2$d/%3$d)</string>
     <string name="quiz_info_placeholder">Quiz Info</string>
     <string name="question_placeholder">Question</string>
+    <string name="quiz_result">Result: %1$d/%2$d are correct!</string>
+
 </resources>

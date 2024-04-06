@@ -7,6 +7,9 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Intent;
+import android.view.View;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -70,6 +73,8 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
         textViewQuestion = findViewById(R.id.textViewQuestion);
         radioGroupOptions = findViewById(R.id.radioGroupOptions);
         Button buttonNext = findViewById(R.id.buttonNext);
+        Button buttonFinish = findViewById(R.id.buttonFinish);
+        buttonFinish.setVisibility(View.GONE);
 
         // Set quiz information text
         textViewQuizInfo.setText(getString(R.string.quiz_info, quiz.getName(), currentQuestionIndex + 1, questions.size()));
@@ -86,6 +91,10 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
             } else {
                 showResult();
             }
+        });
+        // Set Finish button click listener
+        buttonFinish.setOnClickListener(v -> {
+            showResult(); // Call showResult method when Finish button is clicked
         });
         updateButtonText();
     }
@@ -167,8 +176,22 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
                 .show();
     }
 
+//    private void showResult() {
+//        int totalQuestions = quiz.getNumQuestions();
+//        Toast.makeText(this, "Result: " + correctAnswers + "/" + totalQuestions + " are correct!", Toast.LENGTH_LONG).show();
+//    }
+
     private void showResult() {
-        int totalQuestions = quiz.getNumQuestions();
-        Toast.makeText(this, "Result: " + correctAnswers + "/" + totalQuestions + " are correct!", Toast.LENGTH_LONG).show();
+        int totalQuestions = questions.size(); // Get the total number of questions
+        String resultText = "Result: " + correctAnswers + "/" + totalQuestions + " are correct!";
+        Intent intent = new Intent(TakeQuizQuestionsActivity.this, QuizResultActivity.class);
+
+        intent.putExtra("resultText", resultText);
+        startActivity(intent); // Launch the QuizResultActivity
+        finish(); // Finish the current activity
     }
+
+
+
+
 }

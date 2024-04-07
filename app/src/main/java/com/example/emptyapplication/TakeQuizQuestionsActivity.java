@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TakeQuizQuestionsActivity extends AppCompatActivity {
+    //private String quizId;
 
     private Quiz quiz;
     private List<Question> questions;
@@ -176,10 +177,7 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
                 .show();
     }
 
-//    private void showResult() {
-//        int totalQuestions = quiz.getNumQuestions();
-//        Toast.makeText(this, "Result: " + correctAnswers + "/" + totalQuestions + " are correct!", Toast.LENGTH_LONG).show();
-//    }
+
 
     private void showResult() {
         int totalQuestions = questions.size(); // Get the total number of questions
@@ -187,11 +185,10 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
         Intent intent = new Intent(TakeQuizQuestionsActivity.this, QuizResultActivity.class);
 
         intent.putExtra("resultText", resultText);
+        String quizId = getIntent().getStringExtra("quiz_id");
+        intent.putExtra("quiz_id", quizId);
         startActivity(intent); // Launch the QuizResultActivity
         finish(); // Finish the current activity
     }
-
-
-
 
 }

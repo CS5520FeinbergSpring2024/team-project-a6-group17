@@ -1,7 +1,10 @@
 package com.example.emptyapplication.schemas;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+
 
 public class Question {
     private String text;
@@ -63,5 +66,16 @@ public class Question {
 
     public void setCorrectTFAnswer(boolean correctTFAnswer) {
         this.correctTFAnswer = correctTFAnswer;
+    }
+
+    public String getCorrectAnswerString() {
+        if (this.type == QuestionType.TRUE_FALSE) {
+            return correctTFAnswer ? "True" : "False";
+        } else if (this.type == QuestionType.MULTIPLE_CHOICE) {
+            return correctOptions.stream()
+                    .map(correctOption -> options.get(correctOption))
+                    .collect(Collectors.joining(", "));
+        }
+        return "N/A"; // In case there are other types without a clear 'correct answer'
     }
 }

@@ -3,8 +3,10 @@ package com.example.emptyapplication;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -35,6 +37,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AddQuizActivity extends AppCompatActivity {
 
@@ -42,6 +46,7 @@ public class AddQuizActivity extends AppCompatActivity {
     private int numQuestions;
     private String newQuizId;
     private Quiz newQuiz;
+    private List<Question> questions;
     private String selectedQuizType;
     private EditText editTextAddQuizName;
     private EditText editTextAddQuizQuestion;
@@ -60,25 +65,13 @@ public class AddQuizActivity extends AppCompatActivity {
             return insets;
         });
 
+
         currQuestionNo = getIntent().getIntExtra("currQuestionNo", 0);
         numQuestions = getIntent().getIntExtra("numQuestions", 0);
         newQuizId = getIntent().getStringExtra("quiz_id");
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         newQuizRef = database.getReference("Quiz").child(newQuizId);
-
-        newQuizRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                newQuiz = snapshot.getValue(Quiz.class);
-                editTextAddQuizName.setText(newQuiz.getName());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
 
         editTextAddQuizName = findViewById(R.id.editTextAddQuizName);
         editTextAddQuizQuestion = findViewById(R.id.editTextAddQuizQuestion);
@@ -88,6 +81,38 @@ public class AddQuizActivity extends AppCompatActivity {
         Spinner spinnerAddQuizType = findViewById(R.id.spinnerAddQuizType);
         Button buttonAddQuizPrev = findViewById(R.id.buttonAddQuizPrev);
         Button buttonAddQuizNext = findViewById(R.id.buttonAddQuizNext);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.quiz_types, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAddQuizType.setAdapter(adapter);
+
+        newQuizRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                newQuiz = snapshot.getValue(Quiz.class);
+                editTextAddQuizName.setText(newQuiz.getName());
+                if (newQuiz.isCompleted()) {
+                    Question questionEdit = newQuiz.getQuestions().get(currQuestionNo - 1);
+                    editTextAddQuizQuestion.setText(questionEdit.getText());
+                    String questionTypeEdit;
+                    if (questionEdit.getType().equals(QuestionType.MULTIPLE_CHOICE)) {
+                        questionTypeEdit = "Multiple Choice";
+                    }
+                    else {
+                        questionTypeEdit = "True/False";
+                    }
+                    ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinnerAddQuizType.getAdapter();
+                    int position = adapter.getPosition(questionTypeEdit);
+                    spinnerAddQuizType.setSelection(position);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         // set up UI
         buttonAddQuizPrev.setVisibility(View.GONE);
@@ -140,6 +165,7 @@ public class AddQuizActivity extends AppCompatActivity {
                 CheckBox answerCheck = new CheckBox(this);
                 answerCheck.setId(View.generateViewId());
 
+
                 // Add an EditText for answer text
                 EditText answerInput = new EditText(this);
                 answerInput.setLayoutParams(new LinearLayout.LayoutParams(
@@ -148,12 +174,20 @@ public class AddQuizActivity extends AppCompatActivity {
                 answerInput.setHint("Answer " + (i + 1));
                 answerInput.setId(View.generateViewId());
 
+
                 // Add the text input and checkbox to the container
                 answerContainer.addView(answerInput);
                 answerContainer.addView(answerCheck);
 
                 // Add the answer layout to the section
                 answerSection.addView(answerContainer);
+                if (newQuiz.isCompleted()) {
+                    Question questionEdit = newQuiz.getQuestions().get(currQuestionNo - 1);
+                    ArrayList<String> options = questionEdit.getOptions();
+                    ArrayList<Integer> correctOptions = questionEdit.getCorrectOptions();
+                    answerInput.setText(options.get(i));
+                    answerCheck.setChecked(correctOptions.contains(i));
+                }
             }
         } else if ("True/False".equals(quizType)) {
             RadioGroup radioGroup = new RadioGroup(this);
@@ -168,6 +202,16 @@ public class AddQuizActivity extends AppCompatActivity {
             radioGroup.addView(falseOption);
 
             answerSection.addView(radioGroup);
+
+            if (newQuiz.isCompleted()) {
+                Question questionEdit = newQuiz.getQuestions().get(currQuestionNo - 1);
+                boolean correctAnswer = questionEdit.isCorrectTFAnswer();
+                if (correctAnswer) {
+                    trueOption.setChecked(true);
+                } else {
+                    falseOption.setChecked(true);
+                }
+            }
         }
     }
 
@@ -270,6 +314,7 @@ public class AddQuizActivity extends AppCompatActivity {
                         intent = new Intent(AddQuizActivity.this, ManageQuizActivity.class);
                     }
                     startActivity(intent);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();

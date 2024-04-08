@@ -180,6 +180,8 @@ public class ManageQuizActivity extends AppCompatActivity implements ManageQuizA
     @Override
     public void onQuizClick(Quiz quiz) {
         Intent intent = new Intent(this, AddQuizActivity.class);
+        intent.putExtra("currQuestionNo", 1);
+        intent.putExtra("numQuestions", quiz.getNumQuestions());
         intent.putExtra("quiz_id", quiz.getQuiz_id());
         startActivity(intent);
     }

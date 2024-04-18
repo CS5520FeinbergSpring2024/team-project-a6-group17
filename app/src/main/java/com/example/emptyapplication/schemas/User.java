@@ -6,6 +6,8 @@ import java.util.List;
 public class User {
     private String username;
     private List<String> quizCreated;
+
+    private int coins;
 //    todo: quiz taken
 
     public User() {
@@ -15,6 +17,7 @@ public class User {
     public User(String username) {
         this.username = username;
         this.quizCreated = new ArrayList<>();
+        this.coins = 0;
     }
 
 
@@ -32,5 +35,13 @@ public class User {
 
     public void setQuizCreated(List<String> quizCreated) {
         this.quizCreated = quizCreated;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
 }

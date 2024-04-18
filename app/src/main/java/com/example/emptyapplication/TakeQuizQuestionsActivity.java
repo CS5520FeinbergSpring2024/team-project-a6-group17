@@ -1,6 +1,7 @@
 package com.example.emptyapplication;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -36,6 +37,7 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
     private TextView textViewQuizInfo;
     private TextView textViewQuestion;
     private RadioGroup radioGroupOptions;
+    private DatabaseReference userRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,7 +183,7 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
 
     private void showResult() {
         int totalQuestions = questions.size(); // Get the total number of questions
-        String resultText = "Result: " + correctAnswers + "/" + totalQuestions + " are correct!";
+        String resultText = "Result: " + correctAnswers + "/" + totalQuestions + " are correct! Congratulations! You won " + correctAnswers + " coins!" ;
         Intent intent = new Intent(TakeQuizQuestionsActivity.this, QuizResultActivity.class);
 
         intent.putExtra("resultText", resultText);
@@ -189,6 +191,29 @@ public class TakeQuizQuestionsActivity extends AppCompatActivity {
         intent.putExtra("quiz_id", quizId);
         startActivity(intent); // Launch the QuizResultActivity
         finish(); // Finish the current activity
+
+        updateCoins(correctAnswers);
+    }
+
+    private void updateCoins(int coins) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        String username = sharedPreferences.getString("username", "");
+        userRef = FirebaseDatabase.getInstance().getReference("Users").child(username).child("coins");
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Get current number of coins and update
+                Integer currentCoins = dataSnapshot.getValue(Integer.class);
+                if (currentCoins == null) currentCoins = 0;
+                // Update coins based on correct answers
+                userRef.setValue(currentCoins + correctAnswers);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                System.out.println("Failed to read value." + databaseError.toException());
+            }
+        });
     }
 
 }

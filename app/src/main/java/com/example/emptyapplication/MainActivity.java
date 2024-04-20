@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, PlaygroundActivity.class);
         saveUsernameToPreferences(username);
         startActivity(intent);
-        finish();
     }
 
     private void saveUsernameToPreferences(String username) {
